@@ -1,5 +1,11 @@
 Revision history for activitymail.
 
+1.17   2004-03-03T00:55:30
+       - Better handling of file names and directory names with spaces in
+         them. This broke when I added support for directory names with spaces
+         in 1.16, since it eliminated support for file names with spaces. This
+         version correctly supports both. Reported by contact@abilsoft.com.
+
 1.16   Tue Oct 28 05:22:23 2003
        - Now only adding the version arguments to the CVSWeb diff URL if V has
          been specified. This makes it easier to use activitymail in
@@ -9,7 +15,8 @@ Revision history for activitymail.
          is a list of options to be passed through to diff. This is for
          reasons of performance (see the diff man page for more on this). The
          default value of -o is now simply "-u".
-       - Added support for directory names with spaces and commas.
+       - Added support for directory names with spaces and commas. Reported by
+         Colin Gray.
        - Removed discussion of forking from the known issues section. It seems
          to work just fine the way it is.
 
