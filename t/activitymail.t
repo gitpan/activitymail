@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: activitymail.t,v 1.4 2002/06/30 18:42:28 david Exp $
+# $Id: activitymail.t,v 1.1.1.1 2003/08/28 21:54:18 theory Exp $
 
 use strict;
 
