@@ -3,7 +3,7 @@
 eval 'exec /usr/bin/perl -w -S $0 ${1+"$@"}'
     if 0; # not running under some shell
 
-# $Id: activitymail,v 1.17 2004/03/03 00:46:08 theory Exp $
+# $Id: activitymail,v 1.21 2004/03/03 01:32:11 theory Exp $
 
 use strict;
 require 5.005;
@@ -11,7 +11,7 @@ use Getopt::Std;
 use File::Basename qw(basename dirname);
 use vars qw($VERSION);
 
-$VERSION = '1.17';
+$VERSION = '1.18';
 $|++;
 
 ##############################################################################
@@ -148,7 +148,7 @@ sub parse_file_list {
 
     # Make sure we get the real full directory name -- that is, try to
     # compensate for directory names with commas and/or spaces.
-    until (-d catdir($ENV{CVSROOT}, $dir)) {
+    until (-d catdir($ENV{CVSROOT}, $dir) or not @revs) {
         $dir .= " " . shift @revs;
     }
 
@@ -524,7 +524,7 @@ sub get_files {
             DEBUG && dbpnt("Grabbing $map{$flag} from '$file'\n");
             local *FILE;
             open FILE, "<$file"
-              or mydie("Cannot open '$file' for writing: $!\n");
+              or mydie("Cannot open '$file' for reading: $!\n");
             while (<FILE>) {
                 chomp;
                 push @{ $fetched->{$flag} }, $_;
@@ -566,7 +566,7 @@ sub get_files {
         $file = catdir($tmpdir, $file);
         DEBUG && dbpnt("Grabbing $map{rev} from '$file'\n");
         local *FILE;
-        open FILE, "<$file" or mydie("Cannot open '$file' for writing: $!\n");
+        open FILE, "<$file" or mydie("Cannot open '$file' for reading: $!\n");
         local $/;
         $fetched->{rev} .= <FILE>;
         close FILE;
@@ -1228,6 +1228,26 @@ pass in the complete file name to be put into the diff headers, this can lead
 to problems. So until CVS fixes this bug, any files with spaces in them will
 actually have their diff header file names with underscores substituted for
 spaces.
+
+=head1 TO DO
+
+=over 4
+
+=item *
+
+Change the way diffs are aggregated for messages so that we're not loading
+them all up into memory, but passing them directly to sendmail instead. This
+should dramatically lower the amount of memory activitymail takes up during a
+large commit.
+
+=item *
+
+Add a specification to allow messages to be sent only for commits in certain
+directories. I understand that L<commit_prep|commit_prep> and
+L<log_accum|log_accum> could do this, though I'm not sure how. At any rate,
+it'd certainly be useful for certain notification tasks.
+
+=back
 
 =head1 BUGS
 
