@@ -1,8 +1,8 @@
---- #YAML:1.0
+---
 name: activitymail
-version: 1.19
+version: 1.21
 author:
-  - David Wheeler <david@wheeler.net>
+  - David Wheeler <david@justatheory.com>
 abstract: CVS activity notification
 license: perl
 requires:
@@ -11,4 +11,4 @@ requires:
 recommends:
   File::Spec: 0
 provides: {}
-generated_by: Module::Build version 0.24
+generated_by: Module::Build version 0.26

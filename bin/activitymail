@@ -3,7 +3,7 @@
 eval 'exec /usr/bin/perl -w -S $0 ${1+"$@"}'
     if 0; # not running under some shell
 
-# $Id: activitymail,v 1.28 2004/03/11 17:22:04 theory Exp $
+# $Id: activitymail,v 1.34 2005/02/11 02:13:59 theory Exp $
 
 use strict;
 require 5.005;
@@ -11,7 +11,7 @@ use Getopt::Std;
 use File::Basename qw(basename dirname);
 use vars qw($VERSION);
 
-$VERSION = '1.19';
+$VERSION = '1.21';
 $|++;
 
 ##############################################################################
@@ -52,7 +52,8 @@ use constant SMLOCS => qw(/usr/lib/sendmail /usr/sbin/sendmail
                           /usr/ucblib/sendmail);
 
 # When we do forking to get diff files, we want to ignore the children.
-$SIG{CHLD} = 'IGNORE';
+sub REAPER { wait; $SIG{CHLD} = \&REAPER }
+$SIG{CHLD} = \&REAPER;
 
 # These will be used by tmp_file_name().
 my $tmpdir = tmpdir();
@@ -161,6 +162,7 @@ sub parse_file_list {
     }
 
     my ($mod, @subdirs) = splitdir $dir;
+    $mod = shift @subdirs unless defined $mod && $mod ne '';
     DEBUG && dbpnt("Directory: '$dir'; Subdir: '" . catdir(@subdirs) .
                    "'; Module: $mod\n");
 
@@ -396,12 +398,14 @@ sub get_diffs {
     my $diffs = '';
     # Initialize hash of binary file name extesions.
     my %ignore = $opt_B ? (map { lc $_ => 1 } split /\s+/, $opt_B) : ();
+    DEBUG && dbpnt("Will ignore", join (', ', keys %ignore), "\n");
     # Change into the first directory.
     while (my ($file, $vers) = each %$revs) {
         # Skip binary files.
         next if -B $file;
         # Skip any from the list passed by the user.
         if ($opt_B && $file =~ /\.([^.]+)$/) {
+            DEBUG && dbpnt("Ignore $1? ", $ignore{$1} ? "Yes\n" : "No\n");
             next if $ignore{lc $1};
         }
         # Okay, now process this sucker.
@@ -1324,18 +1328,22 @@ large commit.
 
 =head1 BUGS
 
-Report all bugs via the CPAN Request Tracker at
+Please send bug reports to <bug-activitymail@rt.cpan.org> or report them via
+the CPAN Request Tracker at
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=activitymail>.
 
 =head1 AUTHOR
 
-David Wheeler <david@wheeler.net>
+David Wheeler <david@justatheory.com>
 
 =head1 SEE ALSO
 
-L<syncmail|syncmail>, L<commit_prep|commit_prep>, L<log_accum|log_accum>.
-
 =over 4
+
+=item L<SVN::Notify|SVN::Notify>
+
+This is a port of activitymail to subversion. Only it's a B<lot> better. Check
+it out!
 
 =item CVSspam
 
