@@ -1,14 +1,17 @@
 ---
 name: activitymail
-version: 1.21
+version: 1.22
 author:
   - David Wheeler <david@justatheory.com>
 abstract: CVS activity notification
 license: perl
+resources:
+  license: http://dev.perl.org/licenses/
 requires:
   File::Basename: 0
   Getopt::Std: 0
 recommends:
   File::Spec: 0
+  HTML::Entities: 0
 provides: {}
-generated_by: Module::Build version 0.26
+generated_by: Module::Build version 0.2702
