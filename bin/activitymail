@@ -3,7 +3,7 @@
 eval 'exec /usr/bin/perl -w -S $0 ${1+"$@"}'
     if 0; # not running under some shell
 
-# $Id: activitymail,v 1.37 2005/10/04 16:53:17 theory Exp $
+# $Id: activitymail 2369 2005-12-09 19:41:03Z theory $
 
 use strict;
 require 5.005;
@@ -11,7 +11,7 @@ use Getopt::Std;
 use File::Basename qw(basename dirname);
 use vars qw($VERSION);
 
-$VERSION = '1.22';
+$VERSION = '1.23';
 $|++;
 
 ##############################################################################
@@ -160,7 +160,7 @@ sub parse_file_list {
     my @revs;
     if ($dir) {
         # CVS 1.12 command-line format.
-        @revs = shift =~ /(\S+\s[\d\.]+\s[\d\.]+)\s?/g;
+        @revs = shift =~ /(\S+\s(?:[\d\.]+|NONE)\s(?:[\d\.]+|NONE))\s?/g;
     } else {
         # Deprecated command-line format.
         DEBUG && dbpnt("File List: $_[0]\n");
@@ -1016,8 +1016,8 @@ Issues"> for more information.
 
 =head1 USAGE
 
-To use this program, you need to check out your F<CVSROOT> respository from
-CVS and edit some files. Here are the steps to follow:
+To use this program, you need to check out your F<CVSROOT> repository from CVS
+and edit some files. Here are the steps to follow:
 
 =over 4
 
@@ -1103,7 +1103,7 @@ notification message unless the -a option has been specified.
 
 Location of the diff executable, e.g., F</usr/bin/diff>. Defaults to F<diff>,
 thus assuming that the cvs executable is in the path. Used only for comparing
-added and delited files to F</dev/null>.
+added and deleted files to F</dev/null>.
 
 =item -N <file>
 
@@ -1227,7 +1227,7 @@ Older versions of CVS had a bug that prevented them from properly F<diff>ing
 when they were passed arguments to be passed to C<diff> with spaces in them.
 Since we use the C<-L> option to F<diff> to pass in the complete file name to
 be put into the diff headers, this can lead to problems. So if you're using an
-older versiono of CVS that exhibits this problem (prior to 1.12, if I recall
+older version of CVS that exhibits this problem (prior to 1.12, if I recall
 correctly), use this option to replace any spaces in file names with
 underscores before passing them off to C<diff>.
 
@@ -1288,11 +1288,11 @@ An additional advantge of commit mode is that C<activitymail> will construct a
 custom subject for the notification messages. In standard mode, the subject is
 simply the contents of the C<-P> and C<-f> options. In commit mode, however,
 C<activitymail> will use either the first sentence of the log message, or the
-maximum number of words that take up less than 72 characters (includinng the
+maximum number of words that take up less than 72 characters (including the
 C<-m> and/or C<-p> options, if specified). This offers an easy way to see what
 was done during the commit based on the context of the beginning of the actual
 log message. CVS users thus might want to consider making the first sentence
-of their messages (up to the first period) be a breif summary, and the rest of
+of their messages (up to the first period) be a brief summary, and the rest of
 the message can be a more detailed description of the changes.
 
 To use commit mode, you B<must> place a call to C<activitymail> with the C<-l>
@@ -1310,11 +1310,11 @@ filters in place) is the ALL line:
   ALL $CVSROOT/CVSROOT/activitymail -cf %{sVv} -t admins@example.com
 
 The DEFAULT line will work equally well. Perhaps you want to have mail sent to
-different addresses for different repository pacakges. see L<cvs> for more
+different addresses for different repository packages. see L<cvs> for more
 information on the F<loginfo> file syntax.
 
 If you'd like to see diffs for the changes for any particular commit, add the
-C<-d> option. All of the changes to the repository will be recoreded in diff
+C<-d> option. All of the changes to the repository will be recorded in diff
 format and appended to the end of the message:
 
   ALL $CVSROOT/CVSROOT/activitymail -cdf %{sVv} -t admins@example.com
@@ -1342,6 +1342,10 @@ And the F<loginfo> file:
 
 =head1 KNOWN ISSUES
 
+=over
+
+=item *
+
 This program depends on the presence of several modules that are distributed
 standard with Perl. They are L<Getopt::Std|Getopt::Std>,
 L<File::Basename|File::Basename>, and L<File::Spec|File::Spec>. If either
@@ -1351,9 +1355,12 @@ to Perl -- SourceForge, for example, doesn't have it as of this writing),
 C<activitymail> will assume very simple Unix semantics for creating file names,
 and will assume that C</tmp> is the temp directory.
 
-Files with spaces and commas in their names are supported by C<activitymail>
-as of version 1.13. Directories with spaces and commas in their names are
-supported by C<activitymail> as of version 1.16.
+=item *
+
+The default C<diff> on SunOS 5.9 does not like the C<-L> option that
+C<activitymail> uses. The workaround is to install GNU C<diff>.
+
+=back
 
 =head1 TO DO
 
