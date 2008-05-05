@@ -3,7 +3,7 @@
 eval 'exec /usr/bin/perl -w -S $0 ${1+"$@"}'
     if 0; # not running under some shell
 
-# $Id: activitymail 2776 2006-04-04 00:10:02Z theory $
+# $Id: activitymail 3819 2008-05-05 19:56:12Z david $
 
 use strict;
 require 5.005;
@@ -11,7 +11,7 @@ use Getopt::Std;
 use File::Basename qw(basename dirname);
 use vars qw($VERSION);
 
-$VERSION = '1.24';
+$VERSION = '1.25';
 $|++;
 
 ##############################################################################
@@ -48,6 +48,8 @@ BEGIN {
 if ($opt_w) {
     require URI::Escape;
     URI::Escape->import('uri_escape');
+} else {
+    eval 'sub uri_escape( @_ )';
 }
 
 # Set constants.
@@ -735,15 +737,17 @@ sub build_text_msg {
             my $url = $opt_w ? "$opt_w$dir/$nm" : '';
             if ($type eq 'mod') {
                 if ($opt_V) {
-                    $url .= "?r1=$old&r2=$new";
+                    $url .= '?r1=' . uri_escape($old) . '&r2='
+                          . uri_escape($new) if $opt_w;
                     $nm .= " (r$old -> r$new)";
                 }
             } elsif ($type eq 'add') {
-                $url .= "?rev=$new&content-type=text/x-cvsweb-markup";
+                $url .= '?rev=' . uri_escape($new)
+                      . '&content-type=text/x-cvsweb-markup' if $opt_w;
                 $nm .= " (r$new)" if $opt_V;
             }
             $msg .= "$nm\n";
-            $msg .= '        (' . uri_escape($url) . ")\n" if $opt_w;
+            $msg .= "        ($url)\n" if $opt_w;
         }
     }
     return \$msg;
@@ -790,14 +794,18 @@ sub build_html_msg {
             $msg .= "  <li>";
             my $url = $opt_w ? "$opt_w$dir/$nm" : '';
             if ($type eq 'mod') {
-                $url .= "?r1=$old&r2=$new";
+                $url .= '?r1=' . uri_escape($old) . '&r2='
+                      . uri_escape($new) if $opt_w;
                 $nm .= " (r$old -> r$new)" if $opt_V;
             } elsif ($type eq 'add') {
-                $url .= "?rev=$new&content-type=text/x-cvsweb-markup";
+                $url .= '?rev=' . uri_escape($new)
+                      . '&content-type=text/x-cvsweb-markup' if $opt_w;
                 $nm .= " (r$new)" if $opt_V;
             }
             $msg .= (
-                $opt_w ? '<a href="' . uri_escape($url) . qq{">$nm</a>} : $nm
+                $opt_w
+                    ? '<a href="' . encode_entities($url) . qq{">$nm</a>}
+                    : $nm
             ) . "</li>\n";
         }
         $msg .= "</ul>\n";
@@ -1434,9 +1442,18 @@ L<http://ccvs.cvshome.org/source/browse/ccvs/contrib/commit_prep.in>.
 
 =back
 
+=head1 SUPPORT
+
+This module is stored in an open repository at the following address:
+
+L<https://svn.kineticode.com/activitymail/trunk/>
+
+Patches against Widget::Meta are welcome. Please send bug reports to
+<bug-activitymail@rt.cpan.org>.
+
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2002-2005, David Wheeler. All Rights Reserved.
+Copyright (c) 2002-2008, David Wheeler. Some Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under
 the same terms as Perl.
