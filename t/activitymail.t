@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: activitymail.t 3816 2008-05-05 19:53:36Z david $
+# $Id$
 
 use strict;
 use File::Spec::Functions 'catfile';

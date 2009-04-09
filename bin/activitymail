@@ -3,7 +3,7 @@
 eval 'exec /usr/bin/perl -w -S $0 ${1+"$@"}'
     if 0; # not running under some shell
 
-# $Id: activitymail 3819 2008-05-05 19:56:12Z david $
+# $Id$
 
 use strict;
 require 5.005;
@@ -11,7 +11,7 @@ use Getopt::Std;
 use File::Basename qw(basename dirname);
 use vars qw($VERSION);
 
-$VERSION = '1.25';
+$VERSION = '1.26';
 $|++;
 
 ##############################################################################
@@ -49,7 +49,7 @@ if ($opt_w) {
     require URI::Escape;
     URI::Escape->import('uri_escape');
 } else {
-    eval 'sub uri_escape( @_ )';
+    eval 'sub uri_escape { @_ }';
 }
 
 # Set constants.
@@ -1446,14 +1446,14 @@ L<http://ccvs.cvshome.org/source/browse/ccvs/contrib/commit_prep.in>.
 
 This module is stored in an open repository at the following address:
 
-L<https://svn.kineticode.com/activitymail/trunk/>
+L<http://github.com/theory/activitymail/tree/>
 
 Patches against Widget::Meta are welcome. Please send bug reports to
 <bug-activitymail@rt.cpan.org>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2002-2008, David Wheeler. Some Rights Reserved.
+Copyright (c) 2002-2009, David Wheeler. Some Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under
 the same terms as Perl.
